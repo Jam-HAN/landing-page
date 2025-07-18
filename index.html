@@ -63,6 +63,72 @@
     }
   </style>
 </head>
+
+<!-- 🔻 Q&A 게시판 삽입 위치 시작 -->
+<div id="qna">
+  <h2>📢 Q&A 게시판</h2>
+
+  <div class="question-form">
+    <input type="text" id="name" placeholder="이름" required />
+    <textarea id="question" placeholder="질문 내용을 입력하세요." rows="4"></textarea>
+    <button onclick="submitQuestion()">질문 등록</button>
+  </div>
+
+  <div class="qa-list" id="qaList">
+    <!-- 질문 목록 표시 -->
+  </div>
+</div>
+
+<!-- Firebase 및 게시판 스크립트 -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "Jaemin님의 실제 키",
+    authDomain: "...",
+    projectId: "...",
+    ...
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function submitQuestion() {
+    const name = document.getElementById('name').value.trim();
+    const question = document.getElementById('question').value.trim();
+    if (!name || !question) return alert("이름과 질문을 입력해주세요.");
+    db.collection("qa").add({
+      name,
+      question,
+      answer: "",
+      timestamp: new Date()
+    }).then(() => {
+      document.getElementById('name').value = "";
+      document.getElementById('question').value = "";
+    });
+  }
+
+  function loadQuestions() {
+    db.collection("qa").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+      const container = document.getElementById('qaList');
+      container.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const item = document.createElement('div');
+        item.className = 'qa-item';
+        item.innerHTML = `
+          <strong>💬 ${data.name}</strong><br>
+          <div>${data.question}</div>
+          ${data.answer ? `<div class="answer">↪️ ${data.answer}</div>` : ""}
+        `;
+        container.appendChild(item);
+      });
+    });
+  }
+
+  loadQuestions();
+</script>
+<!-- 🔺 Q&A 게시판 삽입 위치 끝 -->
+
 <body>
   <div class="container">
     <!-- ✅ 배너 이미지 -->
