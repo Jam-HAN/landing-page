@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Q&A 게시판</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Pretendard', sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #e60023;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #e60023;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #c4001b;
+    }
+    .qa-item {
+      background: #fafafa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-left: 4px solid #e60023;
+    }
+    .qa-item strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .answer {
+      margin-top: 10px;
+      color: #1a8917;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📢 Q&A 게시판</h2>
+
+    <div class="question-form">
+      <input type="text" id="name" placeholder="이름" required />
+      <textarea id="question" placeholder="질문 내용을 입력하세요." rows="4"></textarea>
+      <button onclick="submitQuestion()">질문 등록</button>
+    </div>
+
+    <hr style="margin: 40px 0;">
+
+    <div class="qa-list" id="qaList">
+      <!-- 질문 목록 표시됨 -->
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function submitQuestion() {
+      const name = document.getElementById('name').value.trim();
+      const question = document.getElementById('question').value.trim();
+      if (!name || !question) return alert("이름과 질문을 입력해주세요.");
+      db.collection("qa").add({
+        name,
+        question,
+        answer: "",
+        timestamp: new Date()
+      }).then(() => {
+        document.getElementById('name').value = "";
+        document.getElementById('question').value = "";
+      });
+    }
+
+    function loadQuestions() {
+      db.collection("qa").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        const container = document.getElementById('qaList');
+        container.innerHTML = "";
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const item = document.createElement('div');
+          item.className = 'qa-item';
+          item.innerHTML = `
+            <strong>💬 ${data.name}</strong>
+            <div>${data.question}</div>
+            ${data.answer ? `<div class="answer">↪️ ${data.answer}</div>` : ""}
+          `;
+          container.appendChild(item);
+        });
+      });
+    }
+
+    loadQuestions();
+  </script>
+</body>
+</html>
