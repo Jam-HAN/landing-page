@@ -87,7 +87,7 @@
       target="_blank"
       class="btn"
       style="display: block; margin-bottom: 16px;"
-      onclick="gtag('event', 'click', { event_category: '링크클릭', event_label: '오픈채팅방입장' });"
+      onclick="event.stopPropagation(); gtag('event', 'chat_click', { event_category: '링크클릭', event_label: '오픈채팅방입장' });"
     >
       👉 오픈채팅방 입장하기
     </a>
