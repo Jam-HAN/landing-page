@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Q&A 답변 관리자 페이지</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: 'Arial', sans-serif; background: #f2f2f2; padding: 20px; }
+    .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    h2 { color: #e60023; margin-bottom: 20px; }
+    .qa-item { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 6px; background: #fafafa; }
+    .qa-item strong { display: block; font-size: 16px; margin-bottom: 5px; }
+    .qa-item textarea { width: 100%; padding: 10px; margin-top: 10px; border-radius: 4px; border: 1px solid #ccc; }
+    .qa-item button { margin-top: 10px; padding: 8px 12px; background: #e60023; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🛠 Q&A 답변 관리자</h2>
+    <div id="qaList"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function loadQuestions() {
+      db.collection("qa").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+        const container = document.getElementById("qaList");
+        container.innerHTML = "";
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const item = document.createElement("div");
+          item.className = "qa-item";
+          item.innerHTML = `
+            <strong>질문자: ${data.name}</strong>
+            <div><strong>질문:</strong> ${data.question}</div>
+            <textarea id="answer-${doc.id}" rows="3" placeholder="답변을 입력하세요...">${data.answer || ''}</textarea>
+            <button onclick="submitAnswer('${doc.id}')">답변 저장</button>
+          `;
+          container.appendChild(item);
+        });
+      });
+    }
+
+    function submitAnswer(docId) {
+      const textarea = document.getElementById(`answer-${docId}`);
+      const answer = textarea.value.trim();
+      if (!answer) return alert("답변을 입력해주세요.");
+      db.collection("qa").doc(docId).update({ answer })
+        .then(() => alert("답변이 저장되었습니다."))
+        .catch((err) => alert("오류 발생: " + err));
+    }
+
+    loadQuestions();
+  </script>
+</body>
+</html>
