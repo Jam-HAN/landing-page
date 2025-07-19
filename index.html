@@ -12,6 +12,41 @@
   <meta property="og:url" content="https://landing.dbphone.co.kr" />
   <meta name="twitter:card" content="summary_large_image">
 
+  <!-- ✅ Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script>
+    // ✅ 1. Firebase 설정 (Jaemin님의 설정값으로 교체 필요)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // ✅ 2. 방문자 수 +1
+    const counterRef = db.collection("visits").doc("index");
+    counterRef.update({
+      count: firebase.firestore.FieldValue.increment(1)
+    });
+
+    // ✅ 3. 방문자 수 실시간 표시
+    counterRef.onSnapshot(doc => {
+      const data = doc.data();
+      document.getElementById("visitCount").innerText = data.count ?? 0;
+    });
+  </script>
+
+  <!-- ✅ Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWMCF6QF4P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CWMCF6QF4P');
+  </script>
+
   <style>
     body {
       margin: 0;
@@ -62,16 +97,6 @@
       color: #888;
     }
   </style>
-
-  <!-- ✅ Google Analytics 추적 코드 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CWMCF6QF4P"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CWMCF6QF4P');
-  </script>
-  
 </head>
 <body>
   <div class="container">
@@ -95,6 +120,9 @@
     <a href="qna.html" class="btn" style="display: block;">
       ❓ Q&A 게시판 보기
     </a>
+
+    <!-- ✅ 방문자 수 -->
+    <p>👀 누적 방문자 수: <span id="visitCount">0</span>명</p>
 
     <div class="footer">© 2025 호갱탈출 버스폰</div>
   </div>
