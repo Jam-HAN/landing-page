@@ -4,32 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Q&A 게시판</title>
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-  <!-- 스타일 개선 -->
   <style>
     body {
-      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-      background: #f9f9f9;
+      font-family: 'Apple SD Gothic Neo', 'Pretendard', sans-serif;
+      background: #f5f5f5;
       margin: 0;
       padding: 20px;
     }
     .container {
-      max-width: 720px;
-      margin: 40px auto;
-      padding: 30px 20px;
+      max-width: 700px;
+      margin: auto;
       background: #fff;
-      border-radius: 12px;
+      padding: 30px;
+      border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     h2 {
       color: #e60023;
       text-align: center;
       margin-bottom: 30px;
-      font-size: 24px;
     }
     input, textarea {
       width: 100%;
@@ -52,55 +47,19 @@
       background-color: #c4001b;
     }
     .qa-item {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      background: #fafafa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
       border-left: 4px solid #e60023;
     }
-    .qa-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+    .qa-item strong {
+      display: block;
+      margin-bottom: 5px;
     }
-    .qa-name {
-      font-weight: bold;
-      font-size: 16px;
-      color: #111;
-    }
-    .badge {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background-color: #ddd;
-      color: #555;
-    }
-    .badge.done {
-      background-color: #00800022;
-      color: #008000;
-    }
-    .badge.pending {
-      background-color: #ffcc00;
-      color: #000;
-    }
-    .qa-question {
-      font-size: 15px;
-      color: #333;
-      margin-bottom: 10px;
-      white-space: pre-wrap;
-    }
-    .qa-answer {
-      background: #f1f1f1;
-      border-radius: 6px;
-      padding: 10px;
-      font-size: 14px;
+    .answer {
+      margin-top: 10px;
       color: #1a8917;
-      white-space: pre-wrap;
-    }
-    .form-wrapper {
-      margin-bottom: 40px;
     }
   </style>
 </head>
@@ -108,13 +67,17 @@
   <div class="container">
     <h2>📢 Q&A 게시판</h2>
 
-    <div class="form-wrapper">
+    <div class="question-form">
       <input type="text" id="name" placeholder="이름" required />
       <textarea id="question" placeholder="질문 내용을 입력하세요." rows="4"></textarea>
       <button onclick="submitQuestion()">질문 등록</button>
     </div>
 
-    <div id="qaList"></div>
+    <hr style="margin: 40px 0;">
+
+    <div class="qa-list" id="qaList">
+      <!-- 질문 목록 표시됨 -->
+    </div>
   </div>
 
   <script>
@@ -153,17 +116,11 @@
           const data = doc.data();
           const item = document.createElement('div');
           item.className = 'qa-item';
-          const isAnswered = data.answer && data.answer.trim() !== "";
-          item.innerHTML = `
-            <div class="qa-header">
-              <div class="qa-name">💬 ${data.name}</div>
-              <span class="badge ${isAnswered ? 'done' : 'pending'}">
-                ${isAnswered ? '답변 완료' : '미답변'}
-              </span>
-            </div>
-            <div class="qa-question">${data.question}</div>
-            ${isAnswered ? `<div class="qa-answer">↪️ ${data.answer}</div>` : ""}
-          `;
+          item.innerHTML = 
+            <strong>💬 ${data.name}</strong>
+            <div>${data.question}</div>
+            ${data.answer ? <div class="answer">↪️ ${data.answer}</div> : ""}
+          ;
           container.appendChild(item);
         });
       });
