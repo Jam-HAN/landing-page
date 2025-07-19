@@ -9,17 +9,14 @@
   <style>
     body {
       font-family: 'Apple SD Gothic Neo', 'Pretendard', sans-serif;
-      background: #f5f5f5;
+      background: #f9f9f9;
       margin: 0;
       padding: 20px;
     }
     .container {
-      max-width: 700px;
-      margin: auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 16px;
     }
     h2 {
       color: #e60023;
@@ -46,20 +43,45 @@
     button:hover {
       background-color: #c4001b;
     }
+    .question-form {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
     .qa-item {
-      background: #fafafa;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      border-left: 4px solid #e60023;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     .qa-item strong {
+      font-size: 18px;
+      font-weight: bold;
       display: block;
       margin-bottom: 5px;
+      color: #111;
     }
-    .answer {
-      margin-top: 10px;
-      color: #1a8917;
+    .qa-item .question-meta {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 12px;
+    }
+    .qa-item .question-content {
+      font-size: 15px;
+      color: #333;
+      margin-bottom: 12px;
+      white-space: pre-wrap;
+    }
+    .answer-box {
+      background: #f1f1f1;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      color: #333;
+      white-space: pre-wrap;
     }
   </style>
 </head>
@@ -73,10 +95,8 @@
       <button onclick="submitQuestion()">질문 등록</button>
     </div>
 
-    <hr style="margin: 40px 0;">
-
     <div class="qa-list" id="qaList">
-      <!-- 질문 목록 표시됨 -->
+      <!-- 질문 목록 표시 -->
     </div>
   </div>
 
@@ -116,11 +136,11 @@
           const data = doc.data();
           const item = document.createElement('div');
           item.className = 'qa-item';
-          item.innerHTML = 
+          item.innerHTML = `
             <strong>💬 ${data.name}</strong>
-            <div>${data.question}</div>
-            ${data.answer ? <div class="answer">↪️ ${data.answer}</div> : ""}
-          ;
+            <div class="question-content">${data.question}</div>
+            ${data.answer ? `<div class="answer-box">↪️ ${data.answer}</div>` : ""}
+          `;
           container.appendChild(item);
         });
       });
