@@ -28,12 +28,25 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    // ✅ 2. 방문자 수 +1
     const counterRef = db.collection("visits").doc("index");
-    counterRef.update({
-      count: firebase.firestore.FieldValue.increment(1)
-    });
+
+    // ✅ 2. localStorage를 이용한 하루 1회 카운트 제한
+    const today = new Date().toISOString().split("T")[0];  // YYYY-MM-DD
+    const STORAGE_KEY = "visitedDate";
+    const lastVisited = localStorage.getItem(STORAGE_KEY);
+
+    if (lastVisited !== today) {
+      counterRef.get().then(doc => {
+        if (!doc.exists) {
+          counterRef.set({ count: 1 });
+        } else {
+          counterRef.update({
+            count: firebase.firestore.FieldValue.increment(1)
+          });
+        }
+      });
+      localStorage.setItem(STORAGE_KEY, today);
+    }
 
     // ✅ 3. 방문자 수 실시간 표시
     counterRef.onSnapshot(doc => {
